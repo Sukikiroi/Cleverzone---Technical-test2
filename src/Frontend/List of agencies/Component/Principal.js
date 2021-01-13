@@ -20,13 +20,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonAppBar() {
+export default function ButtonAppBar({ID,Name}) {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-       
-     <Editabletable/>
+   
+     <Editabletable ID={ID}/>
     </div>
   );
 }

@@ -24,7 +24,7 @@ height:'400px'
       },
 }));
 
-export default function CenteredGrid() {
+export default function CenteredGrid({ID,Name}) {
   const classes = useStyles();
 
   return (
@@ -41,7 +41,7 @@ export default function CenteredGrid() {
         <Grid item xs={10}>
           <Paper className={classes.principal}  elevation={0}>
               <br></br>
-              <Principal/>
+              <Principal ID={ID}/>
 
 
           </Paper>

@@ -13,6 +13,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
 import { Hidden } from '@material-ui/core';
+import { useHistory } from "react-router";
+import useLocalStorage from 'react-use-localstorage';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -30,7 +32,8 @@ export default function MenuAppBar() {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-
+  const history = useHistory();
+  var user=localStorage.getItem('user')
   const handleChange = (event) => {
     setAuth(event.target.checked);
   };
@@ -42,7 +45,12 @@ export default function MenuAppBar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+const Logout=()=>{
 
+  localStorage.clear();
+  history.push("/");
+
+}
   return (
     <div className={classes.root}>
      
@@ -56,7 +64,7 @@ export default function MenuAppBar() {
          
         </Hidden>
           <Typography variant="h6" className={classes.title}>
-            Photos
+          {user}
           </Typography>
          
             <div>
@@ -85,7 +93,7 @@ export default function MenuAppBar() {
                 onClose={handleClose}
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={handleClose,Logout}>Logout</MenuItem>
               </Menu>
             </div>
       

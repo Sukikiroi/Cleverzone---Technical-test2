@@ -1,138 +1,124 @@
-const db = require('./Db-Config')
+const db = require("./Db-Config");
+const config = require("../Backend/config/auth.config");
 
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcryptjs");
+const { isEmpty } = require("lodash");
 
-const getAgencies = (request, response) => {
-  db.pooldb.query('SELECT "NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At" FROM public."Agencies" ', (error, results) => {
+const signup = (request, response) => {
+  const Email = request.body.Email;
+  const Passsword = bcrypt.hashSync(request.body.Password, 8);
+  const Name = request.body.Name;
+  console.log(Email);
+  console.log(Passsword);
+  console.log(Email);
+  response.status(200).send("Rabi yahfdk");
+};
+
+const signin = async (request, response) => {
+  const Email = request.body.Email;
+  const Passsword = request.body.Password;
+  await db.pooldb.query(
+    'SELECT "Name", "Email", "Passsword", "ID" FROM public."Users" where "Email"= $1 and "Passsword" = $2 ',
+    [Email, Passsword],
+    (error, results) => {
       if (error) {
-        throw error
+        throw error;
       }
-      response.status(200).json(results.rows)
-    })
-  }
-
-
-  const getUsers = (request, response) => {
-    db.pooldb.query('SELECT * FROM public."Users" ORDER BY id ASC ', (error, results) => {
-        if (error) {
-          throw error
-        }
-        response.status(200).json(results.rows)
-      })
+      response.status(200).json(results.rows);
     }
+  );
+};
 
-
-
-
-      const createAgence = (request, response) => {
-        const  NameAgence  = request.body.NameAgence
-        const Address= request.body.Address
-        const Wilaya= request.body.Wilaya
-        const  Commune= request.body.Commune
-        const  Phone= request.body.Phone
-       
-    console.log(Phone) 
-    
-     db.pooldb.query(' INSERT INTO public."Agencies"("NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At") VALUES ($1, $2, $3, $4, $5, 1254)', [NameAgence, Address,Wilaya,Commune,Phone], (error, results) => {
-
-     
-     if (error) {
-        throw error
+const getAgencies = async (request, response) => {
+  const id = parseInt(request.params.id);
+  console.log(id);
+  await db.pooldb.query(
+    'SELECT "NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At" FROM public."Agencies" where "Userid"=$1',
+    [id],
+    (error, results) => {
+      if (error) {
+        throw error;
       }
-      response.status(201).send(`User added with ID: ${results.insertId}`)
-    })
-  }
+      response.status(200).json(results.rows);
+    }
+  );
+};
 
+const getUsers = async (request, response) => {
+  await db.pooldb.query(
+    'SELECT * FROM public."Users" ORDER BY id ASC ',
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).json(results.rows);
+    }
+  );
+};
 
+const createAgence = async (request, response) => {
+  const id = parseInt(request.params.id);
+  const NameAgence = request.body.NameAgence;
+  const Address = request.body.Address;
+  const Wilaya = request.body.Wilaya;
+  const Commune = request.body.Commune;
+  const Phone = request.body.Phone;
 
+  console.log(typeof id);
 
+  await db.pooldb.query(
+    ' INSERT INTO public."Agencies"("NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At") VALUES ($1, $2, $3, $4, $5, 1254)',
+    [NameAgence, Address, Wilaya, Commune, Phone],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      response.status(201).send(`User added with ID: ${results.insertId}`);
+    }
+  );
+};
 
-    const BedlUser = (request, response) => {
-    // const id = parseInt(request.params.id)
-    const  NameAgence  = request.body.NameAgence
-    const Address= request.body.Address
-    const Wilaya= request.body.Wilaya
-    const  Commune= request.body.Commune
-    const  Phone= request.body.Phone
+const BedlUser = async (request, response) => {
+  const id = parseInt(request.params.id);
+  const NameAgence = request.body.NameAgence;
+  const Address = request.body.Address;
+  const Wilaya = request.body.Wilaya;
+  const Commune = request.body.Commune;
+  const Phone = request.body.Phone;
+  await db.pooldb.query(
+    'UPDATE public."Agencies" SET "NameAgence"=$1, "Address"=$2, "Wilaya"=$3, "Commune"=$4, "Phone"=$5 WHERE  "Userid"=$6;',
+    [NameAgence, Address, Wilaya, Commune, Phone, id],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).send(`User modified with ID:`);
+    }
+  );
+};
 
-  console.log(Address)
+const deleteAgence = async (request, response) => {
+  const id = parseInt(request.params.id);
 
-  response.status(200).send('tbedl')
-    // db.pooldb.query(
-    //   'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    //   [name, email, id],
-    //   (error, results) => {
-    //     if (error) {
-    //       throw error
-    //     }
-    //     response.status(200).send(`User modified with ID: ${id}`)
-    //   }
-    // )
-  }
+  await db.pooldb.query(
+    "DELETE FROM users WHERE id = $1",
+    [id],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).send(`User deleted with ID: ${id}`);
+    }
+  );
+};
 
-// const getUsers = (request, response) => {
-//   db.pooldb.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
-//       if (error) {
-//         throw error
-//       }
-//       response.status(200).json(results.rows)
-//     })
-//   }
-//   const getUserById = (request, response) => {
-//     const id = parseInt(request.params.id)
-  
-//     db.pooldb.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
-//       if (error) {
-//         throw error
-//       }
-//       response.status(200).json(results.rows)
-//     })
-//   }
-  
-//   const createUser = (request, response) => {
-//     const { name, email } = request.body
-  
-//     db.pooldb.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-//       if (error) {
-//         throw error
-//       }
-//       response.status(201).send(`User added with ID: ${result.insertId}`)
-//     })
-//   }
-  
-//   const updateUser = (request, response) => {
-//     const id = parseInt(request.params.id)
-//     const { name, email } = request.body
-  
-//     db.pooldb.query(
-//       'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-//       [name, email, id],
-//       (error, results) => {
-//         if (error) {
-//           throw error
-//         }
-//         response.status(200).send(`User modified with ID: ${id}`)
-//       }
-//     )
-//   }
-  
-//   const deleteUser = (request, response) => {
-//     const id = parseInt(request.params.id)
-  
-//     db.pooldb.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-//       if (error) {
-//         throw error
-//       }
-//       response.status(200).send(`User deleted with ID: ${id}`)
-//     })
-//   }
-  
-  module.exports = {
-    getUsers,
-    // getUserById,
-    // createUser,
-    // updateUser,
-    // deleteUser,
-    BedlUser,
-    createAgence,
-    getAgencies,
-  }
+module.exports = {
+  getUsers,
+  deleteAgence,
+  signin,
+  signup,
+  BedlUser,
+  createAgence,
+  getAgencies,
+};

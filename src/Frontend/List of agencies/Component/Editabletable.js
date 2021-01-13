@@ -21,6 +21,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import { forwardRef } from "react";
 import axios from 'axios';
+import { toInteger } from "lodash";
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -54,17 +55,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Editable() {
+export default function Editable({ID,Name}) {
   const classes = useStyles();
   const { useState } = React;
   const [datame, setdatame] = useState([]);
   const [ErrorMessage, setErrorMessages] = useState([]);
   const [Iserror, setIserror] = useState(false);
   const user='Azizovic';
+  var id=ID
   useEffect(() => {
     // Update the document title using the browser API
     
-    axios.get(`http://localhost:2000/Agencies`)
+    axios.get(`http://localhost:2000/Agencies/`+id)
       .then(res => {
         
         setdatame( res.data );
@@ -132,7 +134,7 @@ export default function Editable() {
         editable={{
           
           onRowAdd:(newData) => 
-            axios.post("http://localhost:2000/creatagence", newData)
+            axios.post("http://localhost:2000/creatagence/"+id, newData)
             .then(res => {
                 new Promise((resolve, reject) => {
                     setTimeout(() => {
@@ -155,7 +157,7 @@ export default function Editable() {
             ,
 
           onRowUpdate: (newData, oldData,rowData) =>
-          axios.put("http://localhost:2000/BedlUser/"+newData.NameAgence, newData)
+          axios.put("http://localhost:2000/BedlUser/"+id, newData)
           .then(res => {
             new Promise((resolve, reject) => {
                 setTimeout(() => {
