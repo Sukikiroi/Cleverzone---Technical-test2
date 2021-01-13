@@ -1,4 +1,4 @@
-import React,  { useState, useEffect }  from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import Paper from "@material-ui/core/Paper";
@@ -19,11 +19,27 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { forwardRef } from "react";
-import axios from 'axios';
+import axios from "axios";
 import { toInteger } from "lodash";
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+const useStyles = makeStyles((theme) => ({
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+    color :'#030f33',
+    fontSize:'24px'
+  },
+  addButton:{
+    backgroundColor:'#f9f9f9'
+  }
+}));
 const tableIcons = {
-  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Add: forwardRef((props, ref) => <Button startIcon={<AddCircleOutlineIcon />} style={{backgroundColor:'#126cfb',width:'155px',height:'48px'}} variant="contained"
+  color="secondary"{...props} ref={ref} >Add Agency</Button>),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
   Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
   Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -46,56 +62,44 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const useStyles = makeStyles((theme) => ({
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
 
-export default function Editable({ID,Name}) {
+
+const theme = createMuiTheme({
+  title: {
+    color: "red",
+  },
+});
+export default function Editable({ ID, Name }) {
   const classes = useStyles();
   const { useState } = React;
   const [datame, setdatame] = useState([]);
   const [ErrorMessage, setErrorMessages] = useState([]);
   const [Iserror, setIserror] = useState(false);
-  const user='Azizovic';
-  var id=ID
+  const title= <h1 className={classes.title}>Agencies</h1>
+  var id = ID;
+  const myTextIcon = React.useRef(null);
   useEffect(() => {
     // Update the document title using the browser API
-    
-    axios.get(`http://localhost:2000/Agencies/`+id)
-      .then(res => {
-        
-        setdatame( res.data );
-       
-      })
-      .catch(error=>{
-        setErrorMessages(["Cannot load user data"])
-        setIserror(true)
-      })
 
-
-      
+    axios
+      .get(`http://localhost:2000/Agencies/` + id)
+      .then((res) => {
+        setdatame(res.data);
+      })
+      .catch((error) => {
+        setErrorMessages(["Cannot load user data"]);
+        setIserror(true);
+      });
   }, []);
-  
 
-
- 
   const [columns, setColumns] = useState([
-    
-    { title: "NameAgence", field: "NameAgence",searchable :true },
-    { title: " Address", field: "Address" ,searchable :false},
-    { title: " Wilaya", field: "Wilaya",searchable :false },
-    { title: " Commune", field: "Commune",searchable :false },
-    { title: " Phone", field: "Phone",searchable :false },
-    { title: " Created_At", field: "Created At",searchable :false },
-    
+    { title: "NameAgence", field: "NameAgence", searchable: true },
+    { title: " Address", field: "Address", searchable: false },
+    { title: " Wilaya", field: "Wilaya", searchable: false },
+    { title: " Commune", field: "Commune", searchable: false },
+    { title: " Phone", field: "Phone", searchable: false },
+    { title: " Creation date", field: "Created At", searchable: false , defaultGroupOrder: 0},
   ]);
-
-  const [data, setData] = useState([{"id":1,"Name":"A"}]);
 
   return (
     <div>
@@ -104,125 +108,101 @@ export default function Editable({ID,Name}) {
         <Grid item xs={4}></Grid>
         <Grid item xs={4}></Grid>
       </Grid>
-      <MaterialTable
-        icons={tableIcons}
-        cellEditable={{
-          onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-            return new Promise((resolve, reject) => {
-           
-              setTimeout(resolve, 1000);
-            });
-          }
-        }}
-        options={{
-          selection: true,
-          search: true,
+      <MuiThemeProvider theme={theme}>
+        <MaterialTable
+          icons={tableIcons}
+          cellEditable={{
+            onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
+              return new Promise((resolve, reject) => {
+                setTimeout(resolve, 1000);
+              });
+            },
+          }}
+          options={{
+            selection: true,
+            filter:true,
+            grouping: false,
+            search: true,
+            
+            searchFieldStyle: {
+              
+              borderColor: "Highlight",
+              border: 'solid 1px #a3b0bd',
+              borderRadius:'6px',
+              position: "relative",
+              left: "4px",
+              color: "blue",
+              width:'243px',
+              height:'48px',
+            },
+          }}
           
-          searchFieldStyle: {
-            borderStyle: "solid",
-            borderColor: "Highlight",
-            position: "relative",
-            right: "100px",
-            color: "blue",
-          },
-        }}
-       
-        title="Agencies"
-        columns={columns}
-        data={datame}
-        
-        editable={{
-          
-          onRowAdd:(newData) => 
-            axios.post("http://localhost:2000/creatagence/"+id, newData)
-            .then(res => {
-                new Promise((resolve, reject) => {
+          title={title}
+          columns={columns}
+          data={datame}
+          editable={{
+            onRowAdd: (newData) =>
+              axios
+                .post("http://localhost:2000/creatagence/" + id, newData)
+                .then((res) => {
+                  new Promise((resolve, reject) => {
                     setTimeout(() => {
                       setdatame([...datame, newData]);
-                      
+
                       resolve();
                     }, 1000);
-                  })
-           
-           
-           })
+                  });
+                }),
 
-          
+            onRowUpdate: (newData, oldData, rowData) =>
+              axios
+                .put("http://localhost:2000/BedlUser/" + id, newData)
+                .then((res) => {
+                  new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      const dataUpdate = [...datame];
 
+                      const index = oldData.tableData.id;
 
+                      dataUpdate[index] = newData;
 
-         
-         
-            
-            ,
+                      setdatame([...dataUpdate]);
 
-          onRowUpdate: (newData, oldData,rowData) =>
-          axios.put("http://localhost:2000/BedlUser/"+id, newData)
-          .then(res => {
-            new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  const dataUpdate = [...datame];
-                  
-                  const index = oldData.tableData.id;
-           
-                  dataUpdate[index] = newData;
-                  
-                  setdatame([...dataUpdate]);
-                  
-                  resolve();
-                }, 1000);
-              })
-         
-         
-         })
+                      resolve();
+                    }, 1000);
+                  });
+                }),
 
-          
-            // new Promise((resolve, reject) => {
-            //   setTimeout(() => {
-            //     const dataUpdate = [...datame];
-                
-            //     const index = oldData.tableData.id;
-          
-            //     dataUpdate[index] = newData;
-                
-            //     setdatame([...dataUpdate]);
-                
-            //     resolve();
-            //   }, 1000);
-            // })
-            
-            
-            
-            ,
+            onRowDelete: (oldData) =>
+              axios
+                .delete("http://localhost:2000/deleteAgence/" + id, {
+                  data: { oldData },
+                })
 
+                .then((res) => {
+                  new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      const dataDelete = [...datame];
+                      const index = oldData.tableData.id;
+                      dataDelete.splice(index, 1);
+                      setdatame([...dataDelete]);
 
-
-
-
-          onRowDelete: (oldData,rowData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                const dataDelete = [...datame];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                setdatame([...dataDelete]);
-            
-                resolve();
-              }, 1000);
-            }),
-        }}
-        actions={[
-         
-          {
-            icon: 'save',
-            tooltip: 'Save User',
-            onClick: (event, rowData) => {
-              // Do save operation
-            }
-          }
-        ]}
-      
-      />
+                      resolve();
+                    }, 1000);
+                  });
+                }),
+          }}
+          actions={[
+            {
+              icon: "save",
+              tooltip: "Save User",
+              onClick: (event, rowData) => {
+                // Do save operation
+              },
+            },
+          ]}
+        />
+      </MuiThemeProvider>
     </div>
   );
 }

@@ -9,9 +9,6 @@ const signup = (request, response) => {
   const Email = request.body.Email;
   const Passsword = bcrypt.hashSync(request.body.Password, 8);
   const Name = request.body.Name;
-  console.log(Email);
-  console.log(Passsword);
-  console.log(Email);
   response.status(200).send("Rabi yahfdk");
 };
 
@@ -65,16 +62,14 @@ const createAgence = async (request, response) => {
   const Commune = request.body.Commune;
   const Phone = request.body.Phone;
 
-  
-
   await db.pooldb.query(
     ' INSERT INTO public."Agencies"("NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At", "Userid") VALUES ($1, $2, $3, $4, $5, 1254,$6)',
-    [NameAgence, Address, Wilaya, Commune, Phone,id],
+    [NameAgence, Address, Wilaya, Commune, Phone, id],
     (error, results) => {
       if (error) {
         throw error;
       }
-      response.status(201).send(`User added with ID: ${results.insertId}`);
+      response.status(201).send(`Agencies added with ID: ${results.insertId}`);
     }
   );
 };
@@ -93,22 +88,23 @@ const BedlUser = async (request, response) => {
       if (error) {
         throw error;
       }
-      response.status(200).send(`User modified with ID:`);
+      response.status(200).send(`Agencies modified with ID:`);
     }
   );
 };
 
 const deleteAgence = async (request, response) => {
   const id = parseInt(request.params.id);
-
+  const NameAgence = request.body.oldData.NameAgence;
+  console.log(NameAgence);
   await db.pooldb.query(
-    "DELETE FROM users WHERE id = $1",
-    [id],
+    'DELETE FROM public."Agencies" WHERE "Userid"=$1 and  "NameAgence"=$2',
+    [id, NameAgence],
     (error, results) => {
       if (error) {
         throw error;
       }
-      response.status(200).send(`User deleted with ID: ${id}`);
+      response.status(200).send(`Agencies deleted with ID:`);
     }
   );
 };
