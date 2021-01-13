@@ -9,7 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MaterialTable from 'material-table';
 import Editabletable from './Editabletable'
 import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import { Hidden } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   
   menuButton: {

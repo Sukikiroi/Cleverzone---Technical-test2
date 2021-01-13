@@ -126,7 +126,7 @@ export default function Editable({ID,Name}) {
             color: "blue",
           },
         }}
-        
+       
         title="Agencies"
         columns={columns}
         data={datame}

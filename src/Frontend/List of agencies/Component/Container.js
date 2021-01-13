@@ -30,7 +30,7 @@ export default function CenteredGrid({ID,Name}) {
   return (
     <div className={classes.root}>
       <Grid container >
-      <Hidden only="sm">
+      <Hidden only={['sm', 'xs']}>
         <Grid item xs={2}>
           <Paper className={classes.sidebar} elevation={0}>
           <br></br>
