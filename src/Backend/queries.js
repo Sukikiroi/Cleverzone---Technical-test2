@@ -65,11 +65,11 @@ const createAgence = async (request, response) => {
   const Commune = request.body.Commune;
   const Phone = request.body.Phone;
 
-  console.log(typeof id);
+  
 
   await db.pooldb.query(
-    ' INSERT INTO public."Agencies"("NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At") VALUES ($1, $2, $3, $4, $5, 1254)',
-    [NameAgence, Address, Wilaya, Commune, Phone],
+    ' INSERT INTO public."Agencies"("NameAgence", "Address", "Wilaya", "Commune", "Phone", "Created At", "Userid") VALUES ($1, $2, $3, $4, $5, 1254,$6)',
+    [NameAgence, Address, Wilaya, Commune, Phone,id],
     (error, results) => {
       if (error) {
         throw error;
